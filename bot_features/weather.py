@@ -19,7 +19,7 @@ def weather_command(bot, update):
 
 def register_bot_feature(dispatcher):
     dispatcher.addTelegramCommandHandler("weather", weather_command)
-
+    dispatcher.addTelegramRegexHandler(r"^погода$", weather_command)
 
 if __name__ == '__main__':
     print(get_weather())

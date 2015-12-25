@@ -3,7 +3,7 @@ GREET_TEXT = """
 
 Список доступных комманд:
 
-/weather погода в Москве
+/weather погода в Москве (alias "погода")
 """
 
 
@@ -14,3 +14,4 @@ def greet_user(bot, update):
 
 def register_bot_feature(dispatcher):
     dispatcher.addTelegramCommandHandler("hi", greet_user)
+    dispatcher.addTelegramRegexHandler(r"^привет$", greet_user)
