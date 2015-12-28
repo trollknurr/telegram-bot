@@ -1,8 +1,10 @@
 import os
 import sys
 import logging
+
 import bot_features.weather
 import bot_features.hi
+import bot_features.xkcd
 
 from telegram import Updater
 
@@ -27,6 +29,7 @@ dp = updater.dispatcher
 
 bot_features.weather.register_bot_feature(dp)
 bot_features.hi.register_bot_feature(dp)
+bot_features.xkcd.register_bot_feature(dp)
 
 update_queue = updater.start_polling(poll_interval=5, timeout=10)
 
