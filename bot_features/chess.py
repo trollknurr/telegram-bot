@@ -1,6 +1,5 @@
 import re
 import os
-import subprocess
 
 import telegram
 import chess
@@ -9,14 +8,12 @@ from tinydb import TinyDB
 
 from .fen2png.fen2png import chess_position_img
 
-
 game_id_re = re.compile(r'/reg_second_chess_player (?P<game_id>\d+)', flags=re.IGNORECASE)
 board_re = re.compile(r'/get_board (?P<game_id>\d+)', flags=re.IGNORECASE)
 turn_re = re.compile(r'^/make_turn (?P<game_id>\d+) (?P<turn>\w+)$', flags=re.IGNORECASE)
 
 CHESS_FIGURES = dict(zip("KQRBNPkqrbnp", "♔♕♖♗♘♙♚♛♜♝♞♟"))
-DESTINATION = os.environ['REMOTE_IMG_SSH']
-URL_DESTINATION = os.environ['DESTINATION_URL']
+
 db = TinyDB('chess.json')
 chess_db = db.table('chess')
 
@@ -87,11 +84,7 @@ def make_turn(bot, update):
         file_name = '{}.png'.format(game_id)
         p = '/tmp/' + file_name
         board_img.save(p, 'PNG')
-        p = subprocess.Popen(["scp", p, DESTINATION.format(file_name)])
-        os.waitpid(p.pid, 0)
-        bot.sendPhoto(chat_id=updated_game_data['player_to_move'],
-                      photo=URL_DESTINATION.format(file_name))
-
+        bot.sendPhoto(chat_id=update.message.chat_id, photo=open(p, 'rb'))
         bot.sendMessage(update.message.chat_id, text="Ваш ход принят")
 
 
@@ -107,10 +100,7 @@ def get_board(bot, update):
     file_name = '{}.png'.format(game_id)
     p = '/tmp/' + file_name
     board_img.save(p, 'PNG')
-    p = subprocess.Popen(["scp", p, DESTINATION.format(file_name)])
-    os.waitpid(p.pid, 0)
-    bot.sendPhoto(chat_id=update.message.chat_id,
-                  photo=URL_DESTINATION.format(file_name))
+    bot.sendPhoto(chat_id=update.message.chat_id, photo=open(p, 'rb'))
 
 
 def register_bot_feature(dispatcher):
